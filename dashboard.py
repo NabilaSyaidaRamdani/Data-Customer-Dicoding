@@ -39,19 +39,33 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+
+import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
-df = pd.read_csv("customer.csv")
+import plotly.express as px
+
+# Judul aplikasi
 st.title("Visualisasi Top 10 Kota Berdasarkan Jumlah Pelanggan")
-city_counts = df["customer_city"].value_counts().head(10)
 
-fig, ax = plt.subplots()
-ax.barh(city_counts.index, city_counts.values)
-ax.set_xlabel("Number of Customers")
-ax.set_title("Top 10 Cities by Number of Customers")
+# Mengunggah file CSV
+uploaded_file = st.file_uploader("Unggah file CSV", type=["csv"])
 
-for index, value in enumerate(city_counts.values):
-    ax.text(value, index, str(value))
+if uploaded_file is not None:
+    # Membaca data dari file CSV
+    df = pd.read_csv(uploaded_file)
 
-# Menampilkan plot di Streamlit
-st.pyplot(fig)
+    # Pastikan kolom 'customer_city' ada di dalam dataset
+    if 'customer_city' in df.columns:
+        # Menghitung 10 kota teratas berdasarkan jumlah pelanggan
+        city_counts = df["customer_city"].value_counts().head(10)
+
+        # Membuat visualisasi menggunakan Plotly
+        fig = px.bar(city_counts, x=city_counts.values, y=city_counts.index, orientation='h', 
+                     labels={'x': 'Number of Customers', 'y': 'Cities'}, title="Top 10 Cities by Number of Customers")
+
+        # Menampilkan plot di Streamlit
+        st.plotly_chart(fig)
+    else:
+        st.error("Kolom 'customer_city' tidak ditemukan di dalam dataset.")
+else:
+    st.write("Silakan unggah file CSV untuk melihat visualisasi.")

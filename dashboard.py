@@ -71,10 +71,50 @@ else:
     st.write("Silakan unggah file CSV untuk melihat visualisasi.")
 
 
-state_counts = data["customer_state"].value_counts().head(10)  # 10 kota teratas
-plt.scatter(city_counts.values, city_counts.index, color='blue', s=100, alpha=0.7)
-plt.xlabel("Number of Customers")
-plt.title("Top 10 State by Number of Customers")
-for index, value in enumerate(city_counts.values):
-    plt.text(value, index, str(value), va='center')
-plt.show()
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+
+st.set_page_config(page_title="Dashboard", page_icon='🌏', layout='wide')
+st.subheader("Customer Analysis")
+st.markdown("##")
+
+# Load the data
+data = pd.read_csv("customer.csv")
+
+# Sidebar image
+st.sidebar.image("download.jpeg", caption="Customer Monitoring")
+
+# Filter for states
+st.sidebar.header("Please Filter Here")
+state = st.sidebar.multiselect(
+    "Customer State",
+    options=data["customer_state"].unique(),
+    default=data["customer_state"].unique()
+)
+
+# Filter data based on selected states
+df_selection = data[data["customer_state"].isin(state)]
+
+# --- Top 10 States by Number of Customers ---
+st.subheader("Top 10 States by Number of Customers")
+
+# Calculate top 10 states by customer count
+state_counts = df_selection["customer_state"].value_counts().head(10)
+
+# Plotting Scatter Plot using matplotlib
+fig, ax = plt.subplots(figsize=(10, 6))
+ax.scatter(state_counts.values, state_counts.index, color='blue', s=100, alpha=0.7)
+
+# Customizing the plot
+ax.set_xlabel("Number of Customers", fontsize=12)
+ax.set_ylabel("State", fontsize=12)
+ax.set_title("Top 10 States by Number of Customers", fontsize=16, fontweight='bold')
+
+# Adding data labels to the points
+for index, value in enumerate(state_counts.values):
+    ax.text(value, index, str(value), va='center', fontsize=10)
+
+# Display plot in Streamlit
+st.pyplot(fig)
+

@@ -1,4 +1,5 @@
-seaborn      
+seaborn
+pandas
 numpy                         
 numpydoc                      
 streamlit                     

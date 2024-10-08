@@ -1,6 +1,0 @@
-seaborn      
-numpy                         
-numpydoc                      
-streamlit                     
-matplotlib                    
-matplotlib-inline   

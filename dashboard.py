@@ -92,29 +92,3 @@ state = st.sidebar.multiselect(
     options=data["customer_state"].unique(),
     default=data["customer_state"].unique()
 )
-
-# Filter data based on selected states
-df_selection = data[data["customer_state"].isin(state)]
-
-# --- Top 10 States by Number of Customers ---
-st.subheader("Top 10 States by Number of Customers")
-
-# Calculate top 10 states by customer count
-state_counts = df_selection["customer_state"].value_counts().head(10)
-
-# Plotting Scatter Plot using matplotlib
-fig, ax = plt.subplots(figsize=(10, 6))
-ax.scatter(state_counts.values, state_counts.index, color='blue', s=100, alpha=0.7)
-
-# Customizing the plot
-ax.set_xlabel("Number of Customers", fontsize=12)
-ax.set_ylabel("State", fontsize=12)
-ax.set_title("Top 10 States by Number of Customers", fontsize=16, fontweight='bold')
-
-# Adding data labels to the points
-for index, value in enumerate(state_counts.values):
-    ax.text(value, index, str(value), va='center', fontsize=10)
-
-# Display plot in Streamlit
-st.pyplot(fig)
-

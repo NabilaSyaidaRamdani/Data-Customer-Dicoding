@@ -39,48 +39,19 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+import pandas as pd
+import matplotlib.pyplot as plt
+df = pd.read_csv("customer.csv")
+st.title("Visualisasi Top 10 Kota Berdasarkan Jumlah Pelanggan")
+city_counts = df["customer_city"].value_counts().head(10)
 
-# Membuat tombol Sign In
-if st.button('Sign In'):
-    # Membuka tab baru menggunakan JavaScript
-    js = """
-    <script type="text/javascript">
-        window.open('https://your-sign-in-url.com', '_blank').focus();
-    </script>
-    """
-    st.markdown(js, unsafe_allow_html=True)
+fig, ax = plt.subplots()
+ax.barh(city_counts.index, city_counts.values)
+ax.set_xlabel("Number of Customers")
+ax.set_title("Top 10 Cities by Number of Customers")
 
+for index, value in enumerate(city_counts.values):
+    ax.text(value, index, str(value))
 
-# Membuat tombol Sign In
-if st.button('Sign UP'):
-    # Membuka tab baru menggunakan JavaScript
-    js = """
-    <script type="text/javascript">
-        window.open('https://your-sign-in-url.com', '_blank').focus();
-    </script>
-    """
-    st.markdown(js, unsafe_allow_html=True)
- 
-st.title('Belajar Analisis Data')
-tab1, tab2, tab3 = st.tabs(["Tab 1", "Tab 2", "Tab 3"])
- 
-import streamlit as st
-
-# Define the pages
-pages = ["Page 1 - Cat", "Page 2 - Dog", "Page 3 - Owl"]
-
-# Add a selectbox for navigation
-page = st.selectbox("Select a page:", pages)
-
-# Display content based on the selected page
-if page == "Page 1 - Cat":
-    st.header("Page 1: Cat")
-    st.image("https://static.streamlit.io/examples/cat.jpg")
-    
-elif page == "Page 2 - Dog":
-    st.header("Page 2: Dog")
-    st.image("https://static.streamlit.io/examples/dog.jpg")
-    
-elif page == "Page 3 - Owl":
-    st.header("Page 3: Owl")
-    st.image("https://static.streamlit.io/examples/owl.jpg")
+# Menampilkan plot di Streamlit
+st.pyplot(fig)

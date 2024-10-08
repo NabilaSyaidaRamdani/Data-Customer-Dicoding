@@ -74,7 +74,7 @@ else:
 state_counts = data["customer_state"].value_counts().head(10)  # 10 kota teratas
 plt.scatter(city_counts.values, city_counts.index, color='blue', s=100, alpha=0.7)
 plt.xlabel("Number of Customers")
-plt.title("Top 10 Cities by Number of Customers")
+plt.title("Top 10 State by Number of Customers")
 for index, value in enumerate(city_counts.values):
     plt.text(value, index, str(value), va='center')
 plt.show()

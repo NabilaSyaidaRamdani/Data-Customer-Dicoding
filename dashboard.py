@@ -69,3 +69,12 @@ if uploaded_file is not None:
         st.error("Kolom 'customer_city' tidak ditemukan di dalam dataset.")
 else:
     st.write("Silakan unggah file CSV untuk melihat visualisasi.")
+
+
+state_counts = data["customer_state"].value_counts().head(10)  # 10 kota teratas
+plt.scatter(city_counts.values, city_counts.index, color='blue', s=100, alpha=0.7)
+plt.xlabel("Number of Customers")
+plt.title("Top 10 Cities by Number of Customers")
+for index, value in enumerate(city_counts.values):
+    plt.text(value, index, str(value), va='center')
+plt.show()

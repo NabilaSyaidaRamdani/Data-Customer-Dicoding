@@ -1,94 +1,135 @@
 import streamlit as st
-
-st.title("Welcome to My Streamlit App!")
-
-st.header('HI! Our Dear Customer')
-
-st.subheader('Please fill Your Name')
-
-Name = st.text_input(label='Full Name', value='')
-
-City = st.text_input(label='City', value='')
-
-State = st.text_input(label='State', value='')
-
-CustomerID = st.text_input(label='Customer ID', value='')
- 
-with st.sidebar:
-    
-    st.text('Ini merupakan sidebar')
-    
-    values = st.slider(
-        label='Select a range of values',
-        min_value=0, max_value=100, value=(0, 100)
-    )
-    st.write('Values:', values)
-    
-import streamlit as st
-st.markdown(
-    """
-    <style>
-    .stApp {
-        background-image: url('https://i.pinimg.com/564x/ed/6b/be/ed6bbe5838979e5bca84c998cd2a87e6.jpg');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-
-import streamlit as st
-import pandas as pd
-import plotly.express as px
-
-# Judul aplikasi
-st.title("Visualisasi Top 10 Kota Berdasarkan Jumlah Pelanggan")
-
-# Mengunggah file CSV
-uploaded_file = st.file_uploader("Unggah file CSV", type=["csv"])
-
-if uploaded_file is not None:
-    # Membaca data dari file CSV
-    df = pd.read_csv(uploaded_file)
-
-    # Pastikan kolom 'customer_city' ada di dalam dataset
-    if 'customer_city' in df.columns:
-        # Menghitung 10 kota teratas berdasarkan jumlah pelanggan
-        city_counts = df["customer_city"].value_counts().head(10)
-
-        # Membuat visualisasi menggunakan Plotly
-        fig = px.bar(city_counts, x=city_counts.values, y=city_counts.index, orientation='h', 
-                     labels={'x': 'Number of Customers', 'y': 'Cities'}, title="Top 10 Cities by Number of Customers")
-
-        # Menampilkan plot di Streamlit
-        st.plotly_chart(fig)
-    else:
-        st.error("Kolom 'customer_city' tidak ditemukan di dalam dataset.")
-else:
-    st.write("Silakan unggah file CSV untuk melihat visualisasi.")
-
-
-import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import base64
 
-st.set_page_config(page_title="Dashboard", page_icon='🌏', layout='wide')
-st.subheader("Customer Analysis")
-st.markdown("##")
+# Function to add background image from local file
+def add_bg_from_local(image_file):
+    with open(image_file, "rb") as f:
+        img = f.read()
+    b64 = base64.b64encode(img).decode()
+    st.markdown(
+        f"""
+        <style>
+        .stSidebar {{
+            background-image: url(data:image/jpeg;base64,{b64});
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            color: white;  /* Warna teks sidebar */
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 
-# Load the data
+# Set page configuration
+st.set_page_config(page_title="Customer Analysis Dashboard", page_icon="🌏", layout="wide")
+
+# Add background image
+add_bg_from_local("download.jpeg")
+
+# Add title and subtitle
+st.title("Customer Analysis")
+st.subheader("Top 10 Cities by Number of Customers")
+
+# Create a container for Sign In / Sign Up buttons
+col1, col2 = st.columns(2)
+
+with col1:
+    if st.button("Sign In"):
+        st.session_state.page = "sign_in"
+
+with col2:
+    if st.button("Sign Up"):
+        st.session_state.page = "sign_up"
+
+# Create tabs for Sign In and Sign Up
+if 'page' in st.session_state:
+    if st.session_state.page == "sign_in":
+        st.header("Sign In")
+        st.text_input("Username")
+        st.text_input("Password", type='password')
+        if st.button("Submit"):
+            st.success("Signed In!")
+    elif st.session_state.page == "sign_up":
+        st.header("Sign Up")
+        st.text_input("Username")
+        st.text_input("Email")
+        st.text_input("Password", type='password')
+        if st.button("Register"):
+            st.success("Registered Successfully!")
+
+# Load data
 data = pd.read_csv("customer.csv")
 
-# Sidebar image
-st.sidebar.image("download.jpeg", caption="Customer Monitoring")
-
-# Filter for states
+# Sidebar header and filter
 st.sidebar.header("Please Filter Here")
 state = st.sidebar.multiselect(
     "Customer State",
     options=data["customer_state"].unique(),
     default=data["customer_state"].unique()
 )
+
+df_selection = data[(data["customer_state"].isin(state))]
+
+# Calculate top 10 cities by customer count
+city_counts = df_selection["customer_city"].value_counts().head(10)
+
+# Plotting Top 10 Cities using matplotlib
+fig, ax = plt.subplots()
+ax.barh(city_counts.index, city_counts.values)
+ax.set_xlabel("Number of Customers")
+ax.set_title("Top 10 Cities by Number of Customers")
+
+# Add data labels
+for index, value in enumerate(city_counts.values):
+    ax.text(value, index, str(value))
+
+# Display plot in Streamlit
+st.pyplot(fig)
+
+# Plotting Top 5 States using Pie Chart
+st.subheader("Top 5 States by Number of Customers")
+state_counts = df_selection["customer_state"].value_counts().head(5)
+
+# Plotting Pie Chart using matplotlib
+fig, ax = plt.subplots(figsize=(7, 7))
+colors = ['#ff9999', '#66b3ff', '#99ff99', '#ffcc99', '#c2c2f0']
+ax.pie(state_counts.values, labels=state_counts.index, autopct='%1.1f%%', 
+       startangle=90, colors=colors, wedgeprops={'edgecolor': 'black'})
+ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle
+ax.set_title("Top 5 States by Number of Customers", fontsize=16, fontweight='bold')
+
+# Display plot in Streamlit
+st.pyplot(fig)
+
+# Sample Geo Data
+geo_data = {
+    'customer_city': ['franca', 'sao bernardo do campo', 'sao paulo', 'mogi das cruzes', 'campinas'],
+    'total_spent': [200, 1500, 3000, 800, 2000]
+}
+geo_df = pd.DataFrame(geo_data)
+
+# Data Analysis
+geo_analysis = geo_df.groupby('customer_city').sum().reset_index()
+
+# Plotting Total Spending by City
+st.subheader("Total Spending by City")
+fig, ax = plt.subplots(figsize=(10, 6))
+bars = ax.bar(geo_analysis['customer_city'], geo_analysis['total_spent'], color='blue')
+
+# Adding data labels on the bars
+for bar in bars:
+    yval = bar.get_height()
+    ax.text(bar.get_x() + bar.get_width() / 2, yval, int(yval), ha='center', va='bottom')
+
+# Customizing the plot
+ax.set_xlabel("City", fontsize=12)
+ax.set_ylabel("Total Spent", fontsize=12)
+ax.set_title("Total Spending by City", fontsize=16, fontweight='bold')
+ax.set_xticks(range(len(geo_analysis['customer_city'])))  # Set ticks to ensure proper alignment
+ax.set_xticklabels(geo_analysis['customer_city'], rotation=45)
+
+# Display plot in Streamlit
+st.pyplot(fig)

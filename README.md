@@ -11,4 +11,3 @@ streamlit run home.py
 * Streamlit
 * Pandas
 * Matplotlib
-* Seaborn

@@ -104,32 +104,3 @@ ax.set_title("Top 5 States by Number of Customers", fontsize=16, fontweight='bol
 # Display plot in Streamlit
 st.pyplot(fig)
 
-# Sample Geo Data
-geo_data = {
-    'customer_city': ['franca', 'sao bernardo do campo', 'sao paulo', 'mogi das cruzes', 'campinas'],
-    'total_spent': [200, 1500, 3000, 800, 2000]
-}
-geo_df = pd.DataFrame(geo_data)
-
-# Data Analysis
-geo_analysis = geo_df.groupby('customer_city').sum().reset_index()
-
-# Plotting Total Spending by City
-st.subheader("Total Spending by City")
-fig, ax = plt.subplots(figsize=(10, 6))
-bars = ax.bar(geo_analysis['customer_city'], geo_analysis['total_spent'], color='blue')
-
-# Adding data labels on the bars
-for bar in bars:
-    yval = bar.get_height()
-    ax.text(bar.get_x() + bar.get_width() / 2, yval, int(yval), ha='center', va='bottom')
-
-# Customizing the plot
-ax.set_xlabel("City", fontsize=12)
-ax.set_ylabel("Total Spent", fontsize=12)
-ax.set_title("Total Spending by City", fontsize=16, fontweight='bold')
-ax.set_xticks(range(len(geo_analysis['customer_city'])))  # Set ticks to ensure proper alignment
-ax.set_xticklabels(geo_analysis['customer_city'], rotation=45)
-
-# Display plot in Streamlit
-st.pyplot(fig)

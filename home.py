@@ -70,7 +70,6 @@ state = st.sidebar.multiselect(
     options=data["customer_state"].unique(),
     default=data["customer_state"].unique()
 )
-
 df_selection = data[(data["customer_state"].isin(state))]
 
 # Calculate top 10 cities by customer count
@@ -103,4 +102,3 @@ ax.set_title("Top 5 States by Number of Customers", fontsize=16, fontweight='bol
 
 # Display plot in Streamlit
 st.pyplot(fig)
-
